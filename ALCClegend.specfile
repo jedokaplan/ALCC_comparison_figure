@@ -1,0 +1,5 @@
+L 9,Helvetica-Bold,black BL MODEL
+L 9,Helvetica-Bold,black BL TEXT
+#D 0.15 0.5p #horizontal line
+#G 0.1
+#B LCC3.cpt 0.3 0.3 -B+l"fraction of gridcell under land use" -Np

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Jed O. Kaplan, 2019
+# jed.kaplan@arve-research.com
+
+# use with Generic Mapping Tools (GMT) version 5 or higher (classic mode)
+
+gmtset GMT_VERBOSE normal
+gmtset MAP_FRAME_TYPE plain
+gmtset MAP_FRAME_PEN thinnest,black
+gmtset PS_MEDIA a2
+gmtset FONT_ANNOT_PRIMARY 9p,Helvetica,black
+gmtset FONT_LABEL 9p,Helvetica,black
+gmtset MAP_LABEL_OFFSET 0.15c
+
+bounds=-R-169/191/-60/90  # world map without Antarctica
+
+proj=-JQ11/11   # Plate Carrée projection centered on 11 E; typical figure size for GMD
+
+naturalearth=.
+
+ocean=$naturalearth/ne_50m_ocean.gmt
+lakes1=$naturalearth/ne_50m_lakes.gmt
+lakes2=$naturalearth/ne_50m_lakes_historic.gmt
+
+alcc_cpt=LCC_low.cpt
+ 
+output=compare_ALCC_6ka.ps
+
+hyde=HYDE.nc
+kk10=KK10.nc
+
+#---------------
+#HYDE 6ka
+
+psbasemap $bounds $proj -X2 -Y20 -B0 -P -K > $output
+
+grdimage $hyde -R -J -C$alcc_cpt -nl -O -P -K >> $output
+
+psxy $lakes1 -R -J -Gslategray1 -O -P -K >> $output
+psxy $lakes2 -R -J -Gslategray1 -O -P -K >> $output
+
+psxy $ocean -R -J -Gslategray1 -A -L -O -P -K >> $output
+
+sed -e "s|MODEL|HYDE 3.2|g" -e "s|TEXT|5949 BP|g" ALCClegend.specfile | pslegend -R -J -F+pthinnest,black+gwhite -Dx0.15/0.15+w1.7+jBL -C0.15/0.15 -O -P -K >> $output
+
+psbasemap -R -J -B0 -O -P -K >> $output
+
+#---------------
+#KK10 6ka
+
+psbasemap $bounds $proj -X0 -Y-4.9 -B0 -O -P -K  >> $output
+
+grdimage $kk10 -R -J -C$alcc_cpt -nl -O -P -K >> $output
+
+psxy $lakes1 -R -J -Gslategray1 -O -P -K >> $output
+psxy $lakes2 -R -J -Gslategray1 -O -P -K >> $output
+
+psxy $ocean -R -J -Gslategray1 -A -L -O -P -K >> $output
+
+sed -e "s|MODEL|KK10|g" -e "s|TEXT|6000 BP|g" ALCClegend.specfile | pslegend -R -J -F+pthinnest,black+gwhite -Dx0.15/0.15+w1.7+jBL -C0.15/0.15 -O -P -K >> $output
+
+psbasemap -R -J -B0 -O -P -K >> $output
+
+#---------------
+
+psscale -R -J -Dx4.85/-0.6+w8.5/0.3+jBC+h+ef1.3 -W100 -C$alcc_cpt -B+l"percent of gridcell under land use" -Np -O -P >> $output
+
+#---------------
+
+psconvert -Tg -Qt4g4 -A -E720 $output
+psconvert -Tf -Z -A $output

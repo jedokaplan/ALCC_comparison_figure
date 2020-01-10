@@ -1,0 +1,10 @@
+# GMT 6 Session common arguments shelf
+BEGIN GMT 6.1.0
+B	+lpercent of gridcell under land use
+J	Q
+JQ	Q11/11
+R	-169/191/-60/90
+X	0
+Y	-4.9
+@L	17
+END
